@@ -22,7 +22,6 @@
 #ifndef H_ADPLUG_EMUOPL
 #define H_ADPLUG_EMUOPL
 
-
 #include "opl.h"
 extern "C" {
 #include "fmopl.h"
@@ -43,7 +42,7 @@ private:
    bool		use16bit, stereo;
    FM_OPL	*opl[2];				// OPL2 emulator data
    short		*mixbuf0, *mixbuf1;
-   int		mixbufSamples, rate;
+   int		mixbufSamples;
 };
 
 #endif

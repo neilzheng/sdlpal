@@ -27,12 +27,11 @@
 #include "palcommon.h"
 #include "font.h"
 #include "global.h"
-#include "palcfg.h"
 #include "map.h"
 #include "res.h"
 #include "scene.h"
-#include "players.h"
-#include "audio.h"
+#include "rixplay.h"
+#include "sound.h"
 #include "video.h"
 #include "input.h"
 #include "text.h"
@@ -49,11 +48,14 @@
 #include "fight.h"
 #include "play.h"
 #include "game.h"
+
+#ifdef PAL_HAS_NATIVEMIDI
 #include "midi.h"
+#endif
 
 VOID
 PAL_Shutdown(
-   int exit_code
+   VOID
 );
 
 #endif

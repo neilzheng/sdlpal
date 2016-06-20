@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Modified by Lou Yihua <louyihua@21cn.com> with Unicode support, 2015
-//
 
 #ifndef UI_H
 #define UI_H
@@ -49,8 +47,11 @@ extern "C"
 
 #define DESCTEXT_COLOR                     0x2E
 
-#define MAINMENU_BACKGROUND_FBPNUM         (gConfig.fIsWIN95 ? 2 :60)
-
+#ifdef PAL_WIN95
+#define MAINMENU_BACKGROUND_FBPNUM         2
+#else
+#define MAINMENU_BACKGROUND_FBPNUM         60
+#endif
 #define RIX_NUM_OPENINGMENU                4
 #define MAINMENU_LABEL_NEWGAME             7
 #define MAINMENU_LABEL_LOADGAME            8
@@ -75,14 +76,13 @@ extern "C"
 #define SYSMENU_LABEL_MUSIC                13
 #define SYSMENU_LABEL_SOUND                14
 #define SYSMENU_LABEL_QUIT                 15
-#define SYSMENU_LABEL_BATTLEMODE           606
-#define SYSMENU_LABEL_LAUNCHSETTING        612
+#define SYSMENU_LABEL_BATTLEMODE           (PAL_ADDITIONAL_WORD_FIRST)
 
-#define BATTLESPEEDMENU_LABEL_1            (SYSMENU_LABEL_BATTLEMODE + 1)
-#define BATTLESPEEDMENU_LABEL_2            (SYSMENU_LABEL_BATTLEMODE + 2)
-#define BATTLESPEEDMENU_LABEL_3            (SYSMENU_LABEL_BATTLEMODE + 3)
-#define BATTLESPEEDMENU_LABEL_4            (SYSMENU_LABEL_BATTLEMODE + 4)
-#define BATTLESPEEDMENU_LABEL_5            (SYSMENU_LABEL_BATTLEMODE + 5)
+#define BATTLESPEEDMENU_LABEL_1            (PAL_ADDITIONAL_WORD_FIRST + 1)
+#define BATTLESPEEDMENU_LABEL_2            (PAL_ADDITIONAL_WORD_FIRST + 2)
+#define BATTLESPEEDMENU_LABEL_3            (PAL_ADDITIONAL_WORD_FIRST + 3)
+#define BATTLESPEEDMENU_LABEL_4            (PAL_ADDITIONAL_WORD_FIRST + 4)
+#define BATTLESPEEDMENU_LABEL_5            (PAL_ADDITIONAL_WORD_FIRST + 5)
 
 #define INVMENU_LABEL_USE                  23
 #define INVMENU_LABEL_EQUIP                22
@@ -98,13 +98,6 @@ extern "C"
 #define STATUS_LABEL_DEXTERITY             54
 #define STATUS_LABEL_FLEERATE              55
 #define STATUS_COLOR_EQUIPMENT             0xBE
-
-#define EQUIP_LABEL_HEAD                   600
-#define EQUIP_LABEL_SHOULDER               601
-#define EQUIP_LABEL_BODY                   602
-#define EQUIP_LABEL_HAND                   603
-#define EQUIP_LABEL_FOOT                   604
-#define EQUIP_LABEL_NECK                   605
 
 #define BUYMENU_LABEL_CURRENT              35
 #define SELLMENU_LABEL_PRICE               25
@@ -144,12 +137,11 @@ typedef struct tagMENUITEM
    BOOL          fEnabled;
    PAL_POS       pos;
 } MENUITEM, *LPMENUITEM;
-typedef const MENUITEM* LPCMENUITEM;
 
 typedef struct tagOBJECTDESC
 {
    WORD                        wObjectID;
-   LPWSTR                      lpDesc;
+   LPSTR                       lpDesc;
    struct tagOBJECTDESC       *next;
 } OBJECTDESC, *LPOBJECTDESC;
 
@@ -205,7 +197,7 @@ PAL_DeleteBox(
 WORD
 PAL_ReadMenu(
    LPITEMCHANGED_CALLBACK    lpfnMenuItemChanged,
-   LPCMENUITEM               rgMenuItem,
+   LPMENUITEM                rgMenuItem,
    INT                       nMenuItem,
    WORD                      wDefaultItem,
    BYTE                      bLabelColor
@@ -220,23 +212,6 @@ PAL_DrawNumber(
    NUMALIGN        align
 );
 
-INT
-PAL_MenuTextMaxWidth(
-   LPCMENUITEM    rgMenuItem,
-   INT            nMenuItem
-);
-
-INT
-PAL_WordMaxWidth(
-   INT            nFirstWord,
-   INT            nWordNum
-);
-
-INT
-PAL_WordWidth(
-   INT            nWordIndex
-);
-
 LPOBJECTDESC
 PAL_LoadObjectDesc(
    LPCSTR          lpszFileName
@@ -247,7 +222,7 @@ PAL_FreeObjectDesc(
    LPOBJECTDESC    lpObjectDesc
 );
 
-LPCWSTR
+LPCSTR
 PAL_GetObjectDesc(
    LPOBJECTDESC   lpObjectDesc,
    WORD           wObjectID

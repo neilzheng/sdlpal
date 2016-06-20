@@ -22,8 +22,6 @@
 //
 
 #include "palcommon.h"
-#include "global.h"
-#include "palcfg.h"
 
 INT
 PAL_RLEBlitToSurface(
@@ -491,7 +489,7 @@ PAL_FBPBlitToSurface(
    return 0;
 }
 
-INT
+UINT
 PAL_RLEGetWidth(
    LPCBITMAPRLE    lpBitmapRLE
 )
@@ -530,7 +528,7 @@ PAL_RLEGetWidth(
    return lpBitmapRLE[0] | (lpBitmapRLE[1] << 8);
 }
 
-INT
+UINT
 PAL_RLEGetHeight(
    LPCBITMAPRLE       lpBitmapRLE
 )
@@ -643,8 +641,11 @@ PAL_SpriteGetFrame(
    // Get the offset of the frame
    //
    iFrameNum <<= 1;
+#ifdef PAL_WIN95
    offset = ((lpSprite[iFrameNum] | (lpSprite[iFrameNum + 1] << 8)) << 1);
-   if (!gConfig.fIsWIN95) offset = (WORD)offset;
+#else
+   offset = (WORD)((lpSprite[iFrameNum] | (lpSprite[iFrameNum + 1] << 8)) << 1);
+#endif
    return &lpSprite[offset];
 }
 
@@ -676,7 +677,7 @@ PAL_MKFGetChunkCount(
    fseek(fp, 0, SEEK_SET);
    fread(&iNumChunk, sizeof(INT), 1, fp);
 
-   iNumChunk = (SDL_SwapLE32(iNumChunk) - 4) / 4;
+   iNumChunk = (SWAP32(iNumChunk) - 4) / 4;
    return iNumChunk;
 }
 
@@ -722,8 +723,8 @@ PAL_MKFGetChunkSize(
    fseek(fp, 4 * uiChunkNum, SEEK_SET);
    fread(&uiOffset, sizeof(UINT), 1, fp);
    fread(&uiNextOffset, sizeof(UINT), 1, fp);
-   uiOffset = SDL_SwapLE32(uiOffset);
-   uiNextOffset = SDL_SwapLE32(uiNextOffset);
+   uiOffset = SWAP32(uiOffset);
+   uiNextOffset = SWAP32(uiNextOffset);
 
    //
    // Return the length of the chunk.
@@ -786,8 +787,8 @@ PAL_MKFReadChunk(
    fseek(fp, 4 * uiChunkNum, SEEK_SET);
    fread(&uiOffset, 4, 1, fp);
    fread(&uiNextOffset, 4, 1, fp);
-   uiOffset = SDL_SwapLE32(uiOffset);
-   uiNextOffset = SDL_SwapLE32(uiNextOffset);
+   uiOffset = SWAP32(uiOffset);
+   uiNextOffset = SWAP32(uiNextOffset);
 
    //
    // Get the length of the chunk.
@@ -858,27 +859,24 @@ PAL_MKFGetDecompressedSize(
    //
    fseek(fp, 4 * uiChunkNum, SEEK_SET);
    fread(&uiOffset, 4, 1, fp);
-   uiOffset = SDL_SwapLE32(uiOffset);
+   uiOffset = SWAP32(uiOffset);
 
    //
    // Read the header.
    //
    fseek(fp, uiOffset, SEEK_SET);
-   if (gConfig.fIsWIN95)
-   {
-      fread(buf, sizeof(DWORD), 1, fp);
-      buf[0] = SDL_SwapLE32(buf[0]);
+#ifdef PAL_WIN95
+   fread(buf, sizeof(DWORD), 1, fp);
+   buf[0] = SWAP32(buf[0]);
 
-      return (INT)buf[0];
-   }
-   else
-   {
-      fread(buf, sizeof(DWORD), 2, fp);
-      buf[0] = SDL_SwapLE32(buf[0]);
-      buf[1] = SDL_SwapLE32(buf[1]);
+   return (INT)buf[0];
+#else
+   fread(buf, sizeof(DWORD), 2, fp);
+   buf[0] = SWAP32(buf[0]);
+   buf[1] = SWAP32(buf[1]);
 
-      return (buf[0] != 0x315f4a59) ? -1 : (INT)buf[1];
-   }
+   return (buf[0] != 0x315f4a59) ? -1 : (INT)buf[1];
+#endif
 }
 
 INT

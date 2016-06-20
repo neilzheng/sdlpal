@@ -32,11 +32,6 @@ extern "C"
 {
 #endif
 
-long
-flength(
-   FILE *fp
-);
-
 void
 trim(
    char *str
@@ -87,74 +82,30 @@ UTIL_OpenRequiredFile(
 );
 
 FILE *
-UTIL_OpenRequiredFileForMode(
-   LPCSTR               lpszFileName,
-   LPCSTR               szMode
-);
-
-FILE *
 UTIL_OpenFile(
    LPCSTR               lpszFileName
-);
-
-FILE *
-UTIL_OpenFileForMode(
-   LPCSTR               lpszFileName,
-   LPCSTR               szMode
 );
 
 VOID
 UTIL_CloseFile(
    FILE                *fp
 );
+    
+#ifdef __IOS__
 
 LPCSTR
-UTIL_BasePath(
-   VOID
-);
-
-LPCSTR
-UTIL_SavePath(
+UTIL_IOS_BasePath(
    VOID
 );
 
 LPCSTR
-UTIL_ConfigPath(
+UTIL_IOS_SavePath(
    VOID
 );
+    
+#endif
 
-LPCSTR
-UTIL_ScreenShotPath(
-	VOID
-);
-
-BOOL
-UTIL_GetScreenSize(
-   DWORD *pdwScreenWidth,
-   DWORD *pdwScreenHeight
-);
-
-BOOL
-UTIL_IsAbsolutePath(
-	LPCSTR  lpszFileName
-);
-
-BOOL
-UTIL_TouchEnabled(
-   VOID
-);
-
-INT
-UTIL_Platform_Init(
-   int argc,
-   char* argv[]
-);
-
-VOID
-UTIL_Platform_Quit(
-   VOID
-);
-
+#define _PATH_LOG           PAL_PREFIX "log.txt"
 #define LOG_EMERG           0 /* system is unusable */
 #define LOG_ALERT           1 /* action must be taken immediately */
 #define LOG_CRIT            2 /* critical conditions */
@@ -188,7 +139,11 @@ UTIL_WriteLog(
 
 #define UTIL_OpenLog()       ((void)(0))
 #define UTIL_CloseLog()      ((void)(0))
+#ifdef _MSC_VER
+__forceinline VOID UTIL_WriteLog(int i, const char *p, ...) {}
+#else
 #define UTIL_WriteLog(...)   ((void)(0))
+#endif
 
 #endif
 

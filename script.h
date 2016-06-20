@@ -27,8 +27,6 @@ extern "C"
 {
 #endif
 
-#define PAL_ITEM_DESC_BOTTOM	(1 << 15)
-
 WORD
 PAL_RunTriggerScript(
    WORD           wScriptEntry,

@@ -21,15 +21,10 @@
 
 #include "emuopl.h"
 
-#ifndef NULL
-#define NULL     0
-#endif
-
 CEmuopl::CEmuopl(int rate, bool bit16, bool usestereo)
-      : use16bit(bit16), stereo(usestereo), mixbufSamples(0), rate(rate) {
-   //opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
-   //opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
-	opl[0] = opl[1] = NULL;
+      : use16bit(bit16), stereo(usestereo), mixbufSamples(0) {
+   opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
+   opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
 
    currType = TYPE_OPL2;
 
@@ -141,11 +136,7 @@ void CEmuopl::write(int reg, int val) {
 }
 
 void CEmuopl::init() {
-	if (opl[0]) OPLDestroy(opl[0]);
-	if (opl[1]) OPLDestroy(opl[1]);
-	opl[0] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
-	opl[1] = OPLCreate(OPL_TYPE_YM3812, 3579545, rate);
-	OPLResetChip(opl[0]);
+   OPLResetChip(opl[0]);
    OPLResetChip(opl[1]);
    currChip = 0;
 }

@@ -32,15 +32,11 @@ extern "C"
 typedef LPBYTE      LPSPRITE, LPBITMAPRLE;
 typedef LPCBYTE     LPCSPRITE, LPCBITMAPRLE;
 
-#ifndef PAL_POS_DEFINED
-#define PAL_POS_DEFINED
 typedef DWORD           PAL_POS;
-#endif
 
 #define PAL_XY(x, y)    (PAL_POS)(((((WORD)(y)) << 16) & 0xFFFF0000) | (((WORD)(x)) & 0xFFFF))
 #define PAL_X(xy)       (SHORT)((xy) & 0xFFFF)
 #define PAL_Y(xy)       (SHORT)(((xy) >> 16) & 0xFFFF)
-#define PAL_XY_OFFSET(xy, x, y)    (PAL_POS)(((((INT)(y) << 16) & 0xFFFF0000) + ((xy) & 0xFFFF0000)) | (((INT)(x) & 0xFFFF) + ((xy) & 0xFFFF)))
 
 typedef enum tagPALDIRECTION
 {
@@ -81,12 +77,12 @@ PAL_FBPBlitToSurface(
    SDL_Surface      *lpDstSurface
 );
 
-INT
+UINT
 PAL_RLEGetWidth(
    LPCBITMAPRLE      lpBitmapRLE
 );
 
-INT
+UINT
 PAL_RLEGetHeight(
    LPCBITMAPRLE      lpBitmapRLE
 );
@@ -136,34 +132,12 @@ PAL_MKFDecompressChunk(
 );
 
 // From yj1.c:
-extern INT
-(*Decompress)(
-   LPCVOID      Source,
-   LPVOID       Destination,
-   INT          DestSize
-);
-
 INT
-YJ1_Decompress(
+Decompress(
    LPCVOID      Source,
    LPVOID       Destination,
    INT          DestSize
 );
-
-INT
-YJ2_Decompress(
-   LPCVOID      Source,
-   LPVOID       Destination,
-   INT          DestSize
-);
-
-#define PAL_DelayUntil(t) \
-   PAL_ProcessEvent(); \
-   while (!SDL_TICKS_PASSED(SDL_GetTicks(), (t))) \
-   { \
-      PAL_ProcessEvent(); \
-      SDL_Delay(1); \
-   }
 
 #ifdef __cplusplus
 }

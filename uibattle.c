@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Modified by Lou Yihua <louyihua@21cn.com> with Unicode support, 2015
-//
 
 #include "main.h"
 
@@ -250,7 +248,7 @@ PAL_PlayerInfoBox(
          {
             PAL_DrawText(PAL_GetWord(rgwStatusWord[i]),
                PAL_XY(PAL_X(pos) + rgStatusPos[i][0], PAL_Y(pos) + rgStatusPos[i][1]),
-               rgbStatusColor[i], TRUE, FALSE, FALSE);
+               rgbStatusColor[i], TRUE, FALSE);
          }
       }
    }
@@ -407,7 +405,8 @@ PAL_BattleUIDrawMiscMenu(
          }
       }
 
-      PAL_DrawText(PAL_GetWord(rgMenuItem[i].wNumWord), rgMenuItem[i].pos, bColor, TRUE, FALSE, FALSE);
+      PAL_DrawText(PAL_GetWord(rgMenuItem[i].wNumWord), rgMenuItem[i].pos, bColor,
+         TRUE, FALSE);
    }
 }
 
@@ -502,7 +501,7 @@ PAL_BattleUIMiscItemSubMenuUpdate(
 #else
    PAL_BattleUIDrawMiscMenu(0, TRUE);
 #endif
-   PAL_CreateBox(PAL_XY(30, 50), 1, PAL_MenuTextMaxWidth(rgMenuItem, 2) - 1, 0, FALSE);
+   PAL_CreateBox(PAL_XY(30, 50), 1, 1, 0, FALSE);
 
    //
    // Draw the menu items
@@ -516,7 +515,8 @@ PAL_BattleUIMiscItemSubMenuUpdate(
          bColor = MENUITEM_COLOR_SELECTED;
       }
 
-      PAL_DrawText(PAL_GetWord(rgMenuItem[i].wNumWord), rgMenuItem[i].pos, bColor, TRUE, FALSE, FALSE);
+      PAL_DrawText(PAL_GetWord(rgMenuItem[i].wNumWord), rgMenuItem[i].pos, bColor,
+         TRUE, FALSE);
    }
 
    //
@@ -544,7 +544,7 @@ PAL_BattleUIMiscItemSubMenuUpdate(
 
 VOID
 PAL_BattleUIShowText(
-   LPCWSTR       lpszText,
+   LPCSTR        lpszText,
    WORD          wDuration
 )
 /*++
@@ -564,14 +564,14 @@ PAL_BattleUIShowText(
 
 --*/
 {
-   if (!SDL_TICKS_PASSED(SDL_GetTicks(), g_Battle.UI.dwMsgShowTime))
+   if (SDL_GetTicks() < g_Battle.UI.dwMsgShowTime)
    {
-      wcscpy(g_Battle.UI.szNextMsg, lpszText);
+      strcpy(g_Battle.UI.szNextMsg, lpszText);
       g_Battle.UI.wNextMsgDuration = wDuration;
    }
    else
    {
-      wcscpy(g_Battle.UI.szMsg, lpszText);
+      strcpy(g_Battle.UI.szMsg, lpszText);
       g_Battle.UI.dwMsgShowTime = SDL_GetTicks() + wDuration;
    }
 }
@@ -613,7 +613,7 @@ PAL_BattleUIPlayerReady(
       gpGlobals->rgPlayerStatus[w][kStatusConfused] == 0 &&
       !g_Battle.UI.fAutoAttack && !gpGlobals->fAutoBattle)
    {
-      AUDIO_PlaySound(78);
+      SOUND_PlayChannel(78, 1);
    }
 #endif
 }
@@ -814,7 +814,7 @@ PAL_BattleUIUpdate(
       else
       {
          PAL_DrawText(PAL_GetWord(BATTLEUI_LABEL_AUTO), PAL_XY(280, 10),
-            MENUITEM_COLOR_CONFIRMED, TRUE, FALSE, FALSE);
+            MENUITEM_COLOR_CONFIRMED, TRUE, FALSE);
       }
    }
 
@@ -1685,16 +1685,13 @@ end:
    // Show the text message if there is one.
    //
 #ifndef PAL_CLASSIC
-   if (!SDL_TICKS_PASSED(SDL_GetTicks(), g_Battle.UI.dwMsgShowTime))
+   if (SDL_GetTicks() < g_Battle.UI.dwMsgShowTime)
    {
       //
       // The text should be shown in a small window at the center of the screen
       //
       PAL_POS    pos;
-	  int        i, w = wcslen(g_Battle.UI.szMsg), len = 0;
-
-	  for (i = 0; i < w; i++)
-		  len += PAL_CharWidth(g_Battle.UI.szMsg[i]) >> 3;
+      int        len = strlen(g_Battle.UI.szMsg);
 
       //
       // Create the window box
@@ -1706,11 +1703,11 @@ end:
       // Show the text on the screen
       //
       pos = PAL_XY(PAL_X(pos) + 8 + ((len & 1) << 2), PAL_Y(pos) + 10);
-      PAL_DrawText(g_Battle.UI.szMsg, pos, 0, FALSE, FALSE, FALSE);
+      PAL_DrawText(g_Battle.UI.szMsg, pos, 0, FALSE, FALSE);
    }
    else if (g_Battle.UI.szNextMsg[0] != '\0')
    {
-      wcscpy(g_Battle.UI.szMsg, g_Battle.UI.szNextMsg);
+      strcpy(g_Battle.UI.szMsg, g_Battle.UI.szNextMsg);
       g_Battle.UI.dwMsgShowTime = SDL_GetTicks() + g_Battle.UI.wNextMsgDuration;
       g_Battle.UI.szNextMsg[0] = '\0';
    }

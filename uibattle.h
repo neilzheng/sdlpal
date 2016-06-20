@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Modified by Lou Yihua <louyihua@21cn.com> with Unicode support, 2015
-//
 
 #ifndef UIBATTLE_H
 #define UIBATTLE_H
@@ -99,8 +97,8 @@ typedef struct tagBATTLEUI
    BATTLEUISTATE    state;
    BATTLEMENUSTATE  MenuState;
 
-   WCHAR            szMsg[256];           // message to be shown on the screen
-   WCHAR            szNextMsg[256];       // next message to be shown on the screen
+   CHAR             szMsg[256];           // message to be shown on the screen
+   CHAR             szNextMsg[256];       // next message to be shown on the screen
    DWORD            dwMsgShowTime;        // the end time of showing the message
    WORD             wNextMsgDuration;     // duration of the next message
 
@@ -128,7 +126,7 @@ PAL_PlayerInfoBox(
 
 VOID
 PAL_BattleUIShowText(
-   LPCWSTR       lpszText,
+   LPCSTR        lpszText,
    WORD          wDuration
 );
 

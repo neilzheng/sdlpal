@@ -148,7 +148,11 @@ PAL_ShowFBP(
    //
    // HACKHACK: to make the ending show correctly
    //
-   if (wChunkNum != (gConfig.fIsWIN95 ? 68 : 49))
+#ifdef PAL_WIN95
+   if (wChunkNum != 68)
+#else
+   if (wChunkNum != 49)
+#endif
    {
       PAL_FBPBlitToSurface(buf, gpScreen);
    }
@@ -344,11 +348,19 @@ PAL_EndingAnimation(
    SDL_SetPalette(pLower, SDL_PHYSPAL | SDL_LOGPAL, VIDEO_GetPalette(), 0, 256);
 #endif
 
-   PAL_MKFDecompressChunk(buf, 64000, gConfig.fIsWIN95 ? 69 : 61, gpGlobals->f.fpFBP);
+#ifdef PAL_WIN95
+   PAL_MKFDecompressChunk(buf, 64000, 69, gpGlobals->f.fpFBP);
    PAL_FBPBlitToSurface(buf, pUpper);
 
-   PAL_MKFDecompressChunk(buf, 64000, gConfig.fIsWIN95 ? 70 : 62, gpGlobals->f.fpFBP);
+   PAL_MKFDecompressChunk(buf, 64000, 70, gpGlobals->f.fpFBP);
    PAL_FBPBlitToSurface(buf, pLower);
+#else
+   PAL_MKFDecompressChunk(buf, 64000, 61, gpGlobals->f.fpFBP);
+   PAL_FBPBlitToSurface(buf, pUpper);
+
+   PAL_MKFDecompressChunk(buf, 64000, 62, gpGlobals->f.fpFBP);
+   PAL_FBPBlitToSurface(buf, pLower);
+#endif
 
    PAL_MKFDecompressChunk(buf, 64000, 571, gpGlobals->f.fpMGO);
    PAL_MKFDecompressChunk(bufGirl, 6000, 572, gpGlobals->f.fpMGO);
@@ -387,7 +399,11 @@ PAL_EndingAnimation(
       // Draw the beast
       //
       PAL_RLEBlitToSurface(PAL_SpriteGetFrame(buf, 0), gpScreen, PAL_XY(0, -400 + i));
-	  PAL_RLEBlitToSurface(gConfig.fIsWIN95 ? buf + 0x8444 : PAL_SpriteGetFrame(buf, 1), gpScreen, PAL_XY(0, -200 + i));
+#ifdef PAL_WIN95
+	  PAL_RLEBlitToSurface(buf + 0x8444, gpScreen, PAL_XY(0, -200 + i));
+#else
+      PAL_RLEBlitToSurface(PAL_SpriteGetFrame(buf, 1), gpScreen, PAL_XY(0, -200 + i));
+#endif
       //
       // Draw the girl
       //
@@ -429,18 +445,20 @@ PAL_EndingAnimation(
    free(bufGirl);
 }
 
+#ifdef PAL_WIN95
+
 VOID
 PAL_EndingScreen(
    VOID
 )
 {
-	AUDIO_PlayMusic(0x1a, TRUE, 0);
+	RIX_Play(0x1a, TRUE, 0);
 	PAL_RNGPlay(gpGlobals->iCurPlayingRNG, 110, 150, 7);
 	PAL_RNGPlay(gpGlobals->iCurPlayingRNG, 151, 999, 9);
 
 	PAL_FadeOut(2);
 
-	AUDIO_PlayMusic(0x19, TRUE, 0);
+	RIX_Play(0x19, TRUE, 0);
 
 	PAL_ShowFBP(75, 0);
 	PAL_FadeIn(5, FALSE, 1);
@@ -453,12 +471,12 @@ PAL_EndingScreen(
 	gpGlobals->fNeedToFadeIn = TRUE;
 	PAL_EndingAnimation();
 
-	AUDIO_PlayMusic(0, FALSE, 2);
+	RIX_Play(0, FALSE, 2);
 	PAL_ColorFade(7, 15, FALSE);
 
-	if (!AUDIO_PlayCDTrack(2))
+	if (!SOUND_PlayCDA(2))
 	{
-		AUDIO_PlayMusic(0x11, TRUE, 0);
+		RIX_Play(0x11, TRUE, 0);
 	}
 
 	SDL_FillRect(gpScreen, NULL, 0);
@@ -491,12 +509,12 @@ PAL_EndingScreen(
 	PAL_ShowFBP(68, 6);
 
 	PAL_WaitForKey(0);
-	AUDIO_PlayMusic(0, FALSE, 1);
+	RIX_Play(0, FALSE, 1);
 	UTIL_Delay(500);
 
-	if (!AUDIO_PlayCDTrack(13))
+	if (!SOUND_PlayCDA(13))
 	{
-		AUDIO_PlayMusic(9, TRUE, 0);
+		RIX_Play(9, TRUE, 0);
 	}
 
 	PAL_ScrollFBP(67, 0xf, TRUE);
@@ -509,7 +527,7 @@ PAL_EndingScreen(
 	PAL_ScrollFBP(60, 0xf, TRUE);
 	PAL_ScrollFBP(59, 0xf, TRUE);
 
-	AUDIO_PlayMusic(0, FALSE, 6);
+	RIX_Play(0, FALSE, 6);
 	PAL_FadeOut(3);
 }
-
+#endif

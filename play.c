@@ -574,7 +574,13 @@ PAL_StartFrame(
       //
       // Quit Game
       //
-      PAL_QuitGame();
+      if (PAL_ConfirmMenu())
+      {
+         PAL_PlayMUS(0, FALSE, 2);
+         PAL_FadeOut(2);
+         PAL_Shutdown();
+         exit(0);
+      }
    }
 
    if (--gpGlobals->wChasespeedChangeCycles == 0)
@@ -606,7 +612,7 @@ PAL_WaitForKey(
 
    PAL_ClearKeyState();
 
-   while (wTimeOut == 0 || !SDL_TICKS_PASSED(SDL_GetTicks(), dwTimeOut))
+   while (wTimeOut == 0 || SDL_GetTicks() < dwTimeOut)
    {
       UTIL_Delay(5);
 

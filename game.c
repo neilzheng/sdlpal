@@ -47,7 +47,7 @@ PAL_GameStart(
       //
       // Fade in music if the player has loaded an old game.
       //
-      AUDIO_PlayMusic(gpGlobals->wNumMusic, TRUE, 1);
+      PAL_PlayMUS(gpGlobals->wNumMusic, TRUE, 1);
    }
 
    gpGlobals->fNeedToFadeIn = TRUE;
@@ -79,7 +79,6 @@ PAL_GameMain(
    // Show the opening menu.
    //
    gpGlobals->bCurrentSaveSlot = (BYTE)PAL_OpeningMenu();
-   gpGlobals->fInMainGame = TRUE;
 
    //
    // Initialize game data and set the flags to load the game resources.
@@ -114,7 +113,12 @@ PAL_GameMain(
       //
       // Wait for the time of one frame. Accept input here.
       //
-      PAL_DelayUntil(dwTime);
+      PAL_ProcessEvent();
+      while (SDL_GetTicks() <= dwTime)
+      {
+         PAL_ProcessEvent();
+         SDL_Delay(1);
+      }
 
       //
       // Set the time of the next frame.

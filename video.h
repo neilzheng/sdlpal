@@ -34,8 +34,14 @@ extern SDL_Surface *gpScreenBak;
 extern volatile BOOL g_bRenderPaused;
 
 INT
-VIDEO_Startup(
-   VOID
+#ifdef GEKKO // Rikku2000: Crash on compile, allready define on WIISDK
+VIDEO_Init_GEKKO(
+#else
+VIDEO_Init(
+#endif
+   WORD             wScreenWidth,
+   WORD             wScreenHeight,
+   BOOL             fFullScreen
 );
 
 VOID

@@ -18,8 +18,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-// Modified by Lou Yihua <louyihua@21cn.com> with Unicode support, 2015
-//
 
 #include "main.h"
 
@@ -380,7 +378,7 @@ PAL_DeleteBox(
 WORD
 PAL_ReadMenu(
    LPITEMCHANGED_CALLBACK    lpfnMenuItemChanged,
-   LPCMENUITEM               rgMenuItem,
+   LPMENUITEM                rgMenuItem,
    INT                       nMenuItem,
    WORD                      wDefaultItem,
    BYTE                      bLabelColor
@@ -431,7 +429,8 @@ PAL_ReadMenu(
          }
       }
 
-      PAL_DrawText(PAL_GetWord(rgMenuItem[i].wNumWord), rgMenuItem[i].pos, bColor, TRUE, TRUE, FALSE);
+      PAL_DrawText(PAL_GetWord(rgMenuItem[i].wNumWord), rgMenuItem[i].pos,
+         bColor, TRUE, TRUE);
    }
 
    if (lpfnMenuItemChanged != NULL)
@@ -449,7 +448,7 @@ PAL_ReadMenu(
       if (rgMenuItem[wCurrentItem].fEnabled)
       {
          PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-            rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED, FALSE, TRUE, FALSE);
+            rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED, FALSE, TRUE);
       }
 
       PAL_ProcessEvent();
@@ -465,12 +464,12 @@ PAL_ReadMenu(
             // Dehighlight the unselected item.
             //
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, bLabelColor, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, bLabelColor, FALSE, TRUE);
          }
          else
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_INACTIVE, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_INACTIVE, FALSE, TRUE);
          }
 
          wCurrentItem++;
@@ -486,12 +485,12 @@ PAL_ReadMenu(
          if (rgMenuItem[wCurrentItem].fEnabled)
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED, FALSE, TRUE);
          }
          else
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED_INACTIVE, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED_INACTIVE, FALSE, TRUE);
          }
 
          if (lpfnMenuItemChanged != NULL)
@@ -510,12 +509,12 @@ PAL_ReadMenu(
             // Dehighlight the unselected item.
             //
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, bLabelColor, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, bLabelColor, FALSE, TRUE);
          }
          else
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_INACTIVE, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_INACTIVE, FALSE, TRUE);
          }
 
          if (wCurrentItem > 0)
@@ -533,12 +532,12 @@ PAL_ReadMenu(
          if (rgMenuItem[wCurrentItem].fEnabled)
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED, FALSE, TRUE);
          }
          else
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED_INACTIVE, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_SELECTED_INACTIVE, FALSE, TRUE);
          }
 
          if (lpfnMenuItemChanged != NULL)
@@ -554,12 +553,12 @@ PAL_ReadMenu(
          if (rgMenuItem[wCurrentItem].fEnabled)
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, bLabelColor, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, bLabelColor, FALSE, TRUE);
          }
          else
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_INACTIVE, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_INACTIVE, FALSE, TRUE);
          }
 
          break;
@@ -572,7 +571,7 @@ PAL_ReadMenu(
          if (rgMenuItem[wCurrentItem].fEnabled)
          {
             PAL_DrawText(PAL_GetWord(rgMenuItem[wCurrentItem].wNumWord),
-               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_CONFIRMED, FALSE, TRUE, FALSE);
+               rgMenuItem[wCurrentItem].pos, MENUITEM_COLOR_CONFIRMED, FALSE, TRUE);
 
             return rgMenuItem[wCurrentItem].wValue;
          }
@@ -682,111 +681,7 @@ PAL_DrawNumber(
    }
 }
 
-INT
-PAL_MenuTextMaxWidth(
-   LPCMENUITEM    rgMenuItem,
-   INT            nMenuItem
-)
-/*++
-  Purpose:
-
-    Calculate the maximal text width of all the menu items in number of full width characters.
-
-  Parameters:
-
-    [IN]  rgMenuItem - Pointer to the menu item array.
-	[IN]  nMenuItem - Number of menu items.
-
-  Return value:
-
-    Maximal text width.
-
---*/
-{
-	int i, r = 0;
-	for (i = 0; i < nMenuItem; i++)
-	{
-		LPCWSTR itemText = PAL_GetWord(rgMenuItem[i].wNumWord);
-		int j = 0, l = wcslen(itemText), w = 0;
-		for (j = 0; j < l; j++)
-		{
-			w += PAL_CharWidth(itemText[j]);
-		}
-		w = (w + 8) >> 4;
-		if (r < w)
-		{
-			r = w;
-		}
-	}
-	return r;
-}
-
-INT
-PAL_WordMaxWidth(
-   INT            nFirstWord,
-   INT            nWordNum
-)
-/*++
-  Purpose:
-
-    Calculate the maximal text width of a specific range of words in number of full width characters.
-
-  Parameters:
-
-    [IN]  nFirstWord - First index of word.
-	[IN]  nWordNum - Number of words.
-
-  Return value:
-
-    Maximal text width.
-
---*/
-{
-	int i, r = 0;
-	for (i = 0; i < nWordNum; i++)
-	{
-		LPCWSTR itemText = PAL_GetWord(nFirstWord + i);
-		int j = 0, l = wcslen(itemText), w = 0;
-		for (j = 0; j < l; j++)
-		{
-			w += PAL_CharWidth(itemText[j]);
-		}
-		w = (w + 8) >> 4;
-		if (r < w)
-		{
-			r = w;
-		}
-	}
-	return r;
-}
-
-INT
-PAL_WordWidth(
-   INT            nWordIndex
-)
-/*++
-  Purpose:
-
-    Calculate the text width of a specific word.
-
-  Parameters:
-
-	[IN]  nWordNum - Index of the word.
-
-  Return value:
-
-    Text width.
-
---*/
-{
-	LPCWSTR itemText = PAL_GetWord(nWordIndex);
-	int i, l = wcslen(itemText), w = 0;
-	for (i = 0; i < l; i++)
-	{
-		w += PAL_CharWidth(itemText[i]);
-	}
-	return (w + 8) >> 4;
-}
+#ifndef PAL_WIN95
 
 LPOBJECTDESC
 PAL_LoadObjectDesc(
@@ -825,22 +720,20 @@ PAL_LoadObjectDesc(
    //
    while (fgets(buf, 512, fp) != NULL)
    {
-      int wlen;
       p = strchr(buf, '=');
       if (p == NULL)
       {
          continue;
       }
 
-      *p++ = '\0';
-	  wlen = PAL_MultiByteToWideChar(p, -1, NULL, 0);
+      *p = '\0';
+      p++;
 
       pNew = UTIL_calloc(1, sizeof(OBJECTDESC));
 
       sscanf(buf, "%x", &i);
       pNew->wObjectID = i;
-	  pNew->lpDesc = (LPWSTR)UTIL_malloc(wlen * sizeof(WCHAR));
-	  PAL_MultiByteToWideChar(p, -1, pNew->lpDesc, wlen);
+      pNew->lpDesc = strdup(p);
 
       pNew->next = lpDesc;
       lpDesc = pNew;
@@ -880,7 +773,7 @@ PAL_FreeObjectDesc(
    }
 }
 
-LPCWSTR
+LPCSTR
 PAL_GetObjectDesc(
    LPOBJECTDESC   lpObjectDesc,
    WORD           wObjectID
@@ -915,3 +808,5 @@ PAL_GetObjectDesc(
 
    return NULL;
 }
+
+#endif
