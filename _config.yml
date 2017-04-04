@@ -1,0 +1,8 @@
+title: SDLPAL (Development version)
+description: SDL-based reimplementation of the classic Chinese-language RPG "Xian Jian Qi Xia Zhuan" (also known as PAL).
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-modernist
+
+gems:
+  - jekyll-mentions
